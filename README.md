@@ -1,0 +1,1 @@
+Buen dia, Juan. La resolucion del ejecicio es (SherckLean.js). Me apoye en chatGpt para la resolucion, me sugirio varias cosas mas que las deje dado que me resultaron interesantes. Espero tu devolucion. Desde ya muchas gracias.
