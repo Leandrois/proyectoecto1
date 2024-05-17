@@ -1,49 +1,71 @@
 class Mision {
-    constructor(tipo, parametro, solicitante) {     //Clase de misiones, especifica los parameters
-        this.tipo = tipo;
+    constructor(parametro, solicitante) {
         this.parametro = parametro;
         this.solicitante = solicitante;
     }
  
     esDificil() {
-        throw new Error("Método esDificil no implementado"); //Lanza una excepcion ya que debe ser ejecutado en la clase hija el metodo
+        return this.solicitante.charAt(0).toUpperCase() === 'G'; // Verifica si el solicitante comienza con 'G'
     }
  
-   
     calcularPuntosRecompensa() {
-        throw new Error("Método calcularPuntosRecompensa no implementado"); //Lanza una excepcion ya que debe ser ejecutado en la clase hija el metodo
-    }
- 
-    comienzaConG() {
-        return this.solicitante.charAt(0) === 'G';  //Se fija cual empieza con G
+        throw new Error("Método calcularPuntosRecompensa no implementado"); // Lanza una excepción ya que debe ser implementado en la clase hija
     }
 }
  
-class MisionManager {                                                      
-    constructor(misiones) {                                                 //Recibe un array de misiones, las cuales tienen los 3 parameters
-        this.misiones = misiones.map(([tipo, parametro, solicitante]) => {    
-            const MisionClase = tiposMisiones[tipo] || Mision;
-            return new MisionClase(tipo, parametro, solicitante);
+//Separo en clases hijas que heredan de Mision
+class MisionLiberarPrincesa extends Mision {
+    constructor(parametro, solicitante) {
+        super(parametro, solicitante);
+        this.tipo = "Liberar princesa";
+    }
+ 
+    calcularPuntosRecompensa() {
+        // Implementación específica para calcular los puntos de recompensa para la misión de liberar princesa
+        return this.parametro * 10; // Suponiendo que el parámetro indica la dificultad de la misión
+    }
+}
+ 
+//Separo en clases hijas que heredan de Mision
+class MisionBuscarObjetoMagico extends Mision {
+    constructor(parametro, solicitante) {
+        super(parametro, solicitante);
+        this.tipo = "Buscar objeto mágico";
+    }
+ 
+    calcularPuntosRecompensa() {
+        // Implementación específica para calcular los puntos de recompensa para la misión de buscar objeto mágico
+        return this.parametro * 5; // Suponiendo que el parámetro indica la dificultad de la misión
+    }
+}
+ 
+ 
+ 
+ 
+class MisionManager {
+    constructor(misiones) {
+        this.misiones = misiones.map(([tipo, parametro, solicitante]) => {
+            switch (tipo) {
+                case "Liberar princesa":
+                    return new MisionLiberarPrincesa(parametro, solicitante);
+                case "Buscar objeto mágico":
+                    return new MisionBuscarObjetoMagico(parametro, solicitante);
+                default:
+                    return new Mision(parametro, solicitante);
+            }
         });
     }
  
+    obtenerMisionesDificiles() {
+        return this.misiones.filter(mision => mision.esDificil());
+    }
  
-    obtenerResultados() {                   //Itera sobre todas las misiones, verifica si es dificil
-        let misionesDificiles = [];         //Si es dificil la agrega al array o lista misionesDificiles
-        let solicitantes = [];
-        let totalPuntosRecompensa = 0;
+    calcularTotalPuntosRecompensa() {
+        return this.misiones.reduce((total, mision) => total + mision.calcularPuntosRecompensa(), 0);
+    }
  
-        this.misiones.forEach(mision => {
-            if (mision.esDificil()) {
-                misionesDificiles.push(mision.tipo);
-                solicitantes.push(mision.solicitante);
-                totalPuntosRecompensa += mision.calcularPuntosRecompensa();
-            }
-        });
- 
-        const solicitantesConG = solicitantes.filter(solicitante => solicitante.charAt(0).toUpperCase() === 'G');
- 
-        return { misionesDificiles, solicitantes: solicitantesConG, totalPuntosRecompensa };
+    obtenerSolicitantesConG() {
+        return this.misiones.filter(mision => mision.esDificil()).map(mision => mision.solicitante);
     }
 }
  
@@ -53,11 +75,13 @@ const misiones = [
     ["Liberar princesa", 5, "Rey Arturo"]
 ];
  
-const misionManager = new MisionManager(misiones);     //Crea instancias de la clase misionManager
-const resultado = misionManager.obtenerResultados();
+const misionManager = new MisionManager(misiones);
+const misionesDificiles = misionManager.obtenerMisionesDificiles();
+const totalPuntosRecompensa = misionManager.calcularTotalPuntosRecompensa();
+const solicitantesConG = misionManager.obtenerSolicitantesConG();
  
+console.log("Misiones difíciles: ", misionesDificiles.map(mision => mision.tipo));
+console.log("Solicitantes que empiezan con 'G': ", solicitantesConG);
+console.log("Total puntos de recompensa: ", totalPuntosRecompensa);
  
-console.log("Misiones difíciles: ", resultado.misionesDificiles);   // Imprimime
-console.log("Solicitantes que empiezan con 'G': ", resultado.solicitantes);
-console.log("Total puntos de recompensa: ", resultado.totalPuntosRecompensa);
  
